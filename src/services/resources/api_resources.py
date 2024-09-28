@@ -11,16 +11,16 @@ users_ns = Namespace(name='usuarios', description='Gerenciamento de usuarios')
 client = boto3.client(Config.get('awsClientCognito'), region_name=Config.get('awsRegion'))
 user_manager = UserManager(client, Config.get('userPoolId'))
 
+delete_user_model = users_ns.model('UserDelete', {
+    'username': fields.String(required=True, description='Username')
+})
+
 create_and_update_user_model = users_ns.model('User', {
     'username': fields.String(required=True, description='Username'),
     'attributes': fields.List(fields.Nested(users_ns.model('Attribute', {
         'Name': fields.String(required=True, description='Attribute name'),
         'Value': fields.String(required=True, description='Attribute value')
-    })))
-})
-
-delete_user_model = users_ns.model('User', {
-    'username': fields.String(required=True, description='Username')
+    })), required=True, description='List of attributes')
 })
 
 response_model = users_ns.model('Response', {
