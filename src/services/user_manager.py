@@ -32,7 +32,9 @@ class UserManager:
 
     def create_user(self, username, password, attributes: list[dict]):
         try:
-            if validate_document(username):
+            check_document = validate_document(username)
+            if check_document.get('status'):
+                username = check_document.get('document')
                 response = self.client.admin_create_user(
                     UserPoolId=self.user_pool_id,
                     Username=username,
