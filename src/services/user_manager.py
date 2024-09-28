@@ -1,4 +1,7 @@
+import json
+
 from utils.check_document import validate_document
+from utils.datetime_converter import datetime_converter
 
 MESSAGE_ACTION = 'SUPPRESS'
 
@@ -14,20 +17,20 @@ class UserManager:
             if response.get('ResponseMetadata').get('HTTPStatusCode') == 200:
                 return {
                     'status_sucess': True,
-                    'response': response,
-                    'message': message_sucess
+                    'message': message_sucess,
+                    'response': json.loads(json.dumps(response, default=datetime_converter))
                 }
             else:
                 return {
                     'status_sucess': False,
-                    'response': response,
-                    'message': message_error
+                    'message': message_error,
+                    'response': json.loads(json.dumps(response, default=datetime_converter))
                 }
         else:
             return {
                 'status_sucess': False,
-                'response': None,
-                'message': message_error
+                'message': message_error,
+                'response': None
             }
 
     def create_user(self, username, password, attributes: list[dict]):
