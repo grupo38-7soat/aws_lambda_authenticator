@@ -21,6 +21,5 @@ class ApiService(object):
 
     def run(self):
         self.api.add_namespace(users_ns)
-        logger.info('Serving on http://{}:{}'.format(self.HOST, self.PORT))
         logger.info('Serving on http://localhost:{}/swagger/'.format( self.PORT))
         serve(app, host=self.HOST, port=self.PORT)
