@@ -3,7 +3,7 @@ from loguru import logger
 from waitress import serve
 from flask_restx import Api
 
-from services.resources.api_resources import users_ns
+from services.resources.user_api_resources import users_ns
 
 app = Flask(__name__)
 
