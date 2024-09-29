@@ -8,7 +8,7 @@ from services.user_manager import UserManager
 
 PASSWORD_DEFAULT = Config.get('passwordDefault')
 
-users_ns = Namespace(name='users', description='Gerenciamento de usuarios')
+users_ns = Namespace(name='users', description='Gerenciamento de Usuários')
 
 client = boto3.client(Config.get('awsClientCognito'), region_name=Config.get('awsRegion'))
 user_manager = UserManager(client, Config.get('userPoolId'))

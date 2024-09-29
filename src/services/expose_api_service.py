@@ -4,6 +4,8 @@ from waitress import serve
 from flask_restx import Api
 
 from services.resources.user_api_resources import users_ns
+from services.resources.group_api_resources import groups_ns
+from services.resources.user_group_resources import user_groups_ns
 
 app = Flask(__name__)
 
@@ -21,5 +23,7 @@ class ApiService(object):
 
     def run(self):
         self.api.add_namespace(users_ns)
+        self.api.add_namespace(groups_ns)
+        self.api.add_namespace(user_groups_ns)
         logger.info('Serving on http://localhost:{}/swagger/'.format( self.PORT))
         serve(app, host=self.HOST, port=self.PORT)
