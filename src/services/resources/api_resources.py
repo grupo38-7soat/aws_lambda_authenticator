@@ -6,9 +6,10 @@ from flask_restx import Namespace, Resource, fields
 from config import Config
 from services.user_manager import UserManager
 
+PASSWORD_DEFAULT = Config.get('passwordDefault')
+
 users_ns = Namespace(name='users', description='Gerenciamento de usuarios')
 
-# Initialize Cognito client and UserManager
 client = boto3.client(Config.get('awsClientCognito'), region_name=Config.get('awsRegion'))
 user_manager = UserManager(client, Config.get('userPoolId'))
 
@@ -30,11 +31,11 @@ response_model = users_ns.model('Response', {
 class CreateUserResource(Resource):
     @users_ns.expect(create_and_update_user_model)
     @users_ns.marshal_with(response_model)
-    def post(self):
+    def post(self, password=PASSWORD_DEFAULT):
         logger.info(f'endpoint get_user was called with data {users_ns.payload}')
 
         data = users_ns.payload
-        response = user_manager.create_user(data['username'], Config.get('passwordDefault'), data['attributes'])
+        response = user_manager.create_user(data['username'], password, data['attributes'])
         return response
 
 @users_ns.route('/get_user')
