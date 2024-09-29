@@ -1,19 +1,16 @@
 import boto3
+from flask import request
 from loguru import logger
 from flask_restx import Namespace, Resource, fields
 
 from config import Config
 from services.user_manager import UserManager
 
-users_ns = Namespace(name='usuarios', description='Gerenciamento de usuarios')
+users_ns = Namespace(name='users', description='Gerenciamento de usuarios')
 
 # Initialize Cognito client and UserManager
 client = boto3.client(Config.get('awsClientCognito'), region_name=Config.get('awsRegion'))
 user_manager = UserManager(client, Config.get('userPoolId'))
-
-delete_user_model = users_ns.model('UserDelete', {
-    'username': fields.String(required=True, description='Username')
-})
 
 create_and_update_user_model = users_ns.model('User', {
     'username': fields.String(required=True, description='Username'),
@@ -40,11 +37,13 @@ class CreateUserResource(Resource):
         response = user_manager.create_user(data['username'], Config.get('passwordDefault'), data['attributes'])
         return response
 
-@users_ns.route('/get_user/<string:username>')
+@users_ns.route('/get_user')
 class GetUserResource(Resource):
     @users_ns.marshal_with(response_model)
-    def get(self, username):
-        logger.info('endpoint get_user was called')
+    @users_ns.param('username', 'The username of the user', _in='query')
+    def get(self):
+        username = request.args.get('username')
+        logger.info(f'endpoint get_user was called with username {username}')
 
         response = user_manager.get_user(username)
         return response
@@ -60,11 +59,12 @@ class UpdateUserResource(Resource):
         response = user_manager.update_user(data['username'], data['attributes'])
         return response
 
-@users_ns.route('/delete_user/<string:username>')
+@users_ns.route('/delete_user')
 class DeleteUserResource(Resource):
-    @users_ns.expect(delete_user_model)
     @users_ns.marshal_with(response_model)
-    def delete(self, username):
+    @users_ns.param('username', 'The username of the user', _in='query')
+    def delete(self):
+        username = request.args.get('username')
         logger.info(f'endpoint delete_user was called with username {username}')
 
         response = user_manager.delete_user(username)
