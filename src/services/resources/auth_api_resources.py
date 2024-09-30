@@ -1,5 +1,6 @@
 from flask import request
 from flask_restx import Namespace, Resource, fields
+from http import HTTPStatus
 
 from config import Config
 from src.services.user_auth import CognitoAuth
@@ -11,9 +12,9 @@ cognito = CognitoAuth()
 PASSWORD_DEFAULT = Config.get('passwordDefault')
 
 auth_model = auth_ns.model('LoginModel', {
-        'username': fields.String(required=True, description='The username of the user'),
-        'password': fields.String(required=False, description='The password of the user')
-    })
+    'username': fields.String(required=True, description='The username of the user'),
+    'password': fields.String(required=False, description='The password of the user')
+})
 
 @auth_ns.route('/login')
 class LoginResource(Resource):
@@ -24,7 +25,10 @@ class LoginResource(Resource):
         password = data.get('password', PASSWORD_DEFAULT)
 
         response = cognito.authenticate_user(username, password)
-        return response
+        if response['status_success']:
+            return response, HTTPStatus.OK
+        else:
+            return response, HTTPStatus.UNAUTHORIZED
 
 @auth_ns.route('/validate_token')
 class ValidateTokenResource(Resource):
@@ -32,4 +36,8 @@ class ValidateTokenResource(Resource):
     def post(self):
         data = request.form
         token = data.get('token')
-        return cognito.validate_token(token)
+        response = cognito.validate_token(token)
+        if response['status_success']:
+            return response, HTTPStatus.OK
+        else:
+            return response, HTTPStatus.UNAUTHORIZED

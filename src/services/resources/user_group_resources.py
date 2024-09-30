@@ -1,6 +1,7 @@
 import boto3
 from flask import request
 from loguru import logger
+from http import HTTPStatus
 from flask_restx import Namespace, Resource, fields
 
 from config import Config
@@ -34,7 +35,10 @@ class AddUserToGroupResource(Resource):
 
         data = user_groups_ns.payload
         response = user_group_manager.add_user_to_group(data['username'], data['group_name'])
-        return response
+        if response['status_success']:
+            return response, HTTPStatus.CREATED
+        else:
+            return response, HTTPStatus.BAD_REQUEST
 
 
 @user_groups_ns.route('/remove_user_from_group')
@@ -47,7 +51,10 @@ class RemoveUserFromGroupResource(Resource):
 
         data = user_groups_ns.payload
         response = user_group_manager.remove_user_from_group(data['username'], data['group_name'])
-        return response
+        if response['status_success']:
+            return response, HTTPStatus.OK
+        else:
+            return response, HTTPStatus.BAD_REQUEST
 
 
 @user_groups_ns.route('/list_users_in_group')
@@ -60,4 +67,7 @@ class ListUsersInGroupResource(Resource):
         logger.info(f'endpoint list_users_in_group was called with group_name {group_name}')
 
         response = user_group_manager.list_users_in_group(group_name)
-        return response
+        if response['status_success']:
+            return response, HTTPStatus.OK
+        else:
+            return response, HTTPStatus.NOT_FOUND

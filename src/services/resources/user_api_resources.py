@@ -1,6 +1,7 @@
 import boto3
 from flask import request
 from loguru import logger
+from http import HTTPStatus
 from flask_restx import Namespace, Resource, fields
 
 from config import Config
@@ -41,6 +42,7 @@ response_model = users_ns.model('Response', {
     'message': fields.String
 })
 
+
 @users_ns.route('/create_user')
 class CreateUserResource(Resource):
     @auth.login_required
@@ -54,7 +56,10 @@ class CreateUserResource(Resource):
         if data.get('group_name'):
             group_name = data.get('group_name')
         response = user_manager.create_user(data['username'], password, data['attributes'], group_name)
-        return response
+        if response['status_success']:
+            return response, HTTPStatus.CREATED
+        else:
+            return response, HTTPStatus.BAD_REQUEST
 
 @users_ns.route('/get_user')
 class GetUserResource(Resource):
@@ -66,7 +71,10 @@ class GetUserResource(Resource):
         logger.info(f'endpoint get_user was called with username {username}')
 
         response = user_manager.get_user(username)
-        return response
+        if response['status_success']:
+            return response, HTTPStatus.OK
+        else:
+            return response, HTTPStatus.NOT_FOUND
 
 @users_ns.route('/update_user')
 class UpdateUserResource(Resource):
@@ -78,7 +86,10 @@ class UpdateUserResource(Resource):
 
         data = users_ns.payload
         response = user_manager.update_user(data['username'], data['attributes'])
-        return response
+        if response['status_success']:
+            return response, HTTPStatus.OK
+        else:
+            return response, HTTPStatus.BAD_REQUEST
 
 @users_ns.route('/delete_user')
 class DeleteUserResource(Resource):
@@ -90,7 +101,10 @@ class DeleteUserResource(Resource):
         logger.info(f'endpoint delete_user was called with username {username}')
 
         response = user_manager.delete_user(username)
-        return response
+        if response['status_success']:
+            return response, HTTPStatus.NO_CONTENT
+        else:
+            return response, HTTPStatus.NOT_FOUND
 
 @users_ns.route('/list_all_users')
 class ListAllUsersResource(Resource):
@@ -100,4 +114,7 @@ class ListAllUsersResource(Resource):
         logger.info('endpoint list_all_users was called')
 
         response = user_manager.list_all_users()
-        return response
+        if response['status_success']:
+            return response, HTTPStatus.OK
+        else:
+            return response, HTTPStatus.INTERNAL_SERVER_ERROR

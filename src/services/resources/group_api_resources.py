@@ -2,6 +2,7 @@ import boto3
 from flask import request
 from loguru import logger
 from flask_restx import Namespace, Resource, fields
+from http import HTTPStatus
 
 from config import Config
 from services.bearer_token_validation import auth
@@ -34,7 +35,10 @@ class CreateGroupResource(Resource):
 
         data = groups_ns.payload
         response = group_manager.create_group(data['group_name'], data.get('description', ''))
-        return response
+        if response['status_success']:
+            return response, HTTPStatus.CREATED
+        else:
+            return response, HTTPStatus.BAD_REQUEST
 
 
 @groups_ns.route('/get_group')
@@ -47,7 +51,10 @@ class GetGroupResource(Resource):
         logger.info(f'endpoint get_group was called with group_name {group_name}')
 
         response = group_manager.get_group(group_name)
-        return response
+        if response['status_success']:
+            return response, HTTPStatus.OK
+        else:
+            return response, HTTPStatus.NOT_FOUND
 
 
 @groups_ns.route('/update_group')
@@ -60,7 +67,10 @@ class UpdateGroupResource(Resource):
 
         data = groups_ns.payload
         response = group_manager.update_group(data['group_name'], data.get('description', ''))
-        return response
+        if response['status_success']:
+            return response, HTTPStatus.OK
+        else:
+            return response, HTTPStatus.BAD_REQUEST
 
 
 @groups_ns.route('/delete_group')
@@ -73,7 +83,10 @@ class DeleteGroupResource(Resource):
         logger.info(f'endpoint delete_group was called with group_name {group_name}')
 
         response = group_manager.delete_group(group_name)
-        return response
+        if response['status_success']:
+            return response, HTTPStatus.NO_CONTENT
+        else:
+            return response, HTTPStatus.NOT_FOUND
 
 
 @groups_ns.route('/list_all_groups')
@@ -84,4 +97,7 @@ class ListAllGroupsResource(Resource):
         logger.info('endpoint list_all_groups was called')
 
         response = group_manager.list_all_groups()
-        return response
+        if response['status_success']:
+            return response, HTTPStatus.OK
+        else:
+            return response, HTTPStatus.INTERNAL_SERVER_ERROR
