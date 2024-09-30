@@ -64,7 +64,7 @@ class CognitoAuth:
             groups = [group['GroupName'] for group in groups_response['Groups']]
 
             for group_name in group_names:
-                if group_name in groups or True:
+                if group_name in groups:
                     response_template['success'] = True
                     return response_template
             return response_template

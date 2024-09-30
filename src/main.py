@@ -1,6 +1,5 @@
 import sys
 from loguru import logger
-
 from services.expose_api_aws import api_using_aws_lambda
 from services.expose_api_service import ApiService
 

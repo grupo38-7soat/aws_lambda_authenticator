@@ -6,7 +6,6 @@ from utils.check_document import validate_document
 from utils.datetime_converter import datetime_converter
 
 MESSAGE_ACTION = 'SUPPRESS'
-GROUP_NAME_DEFAULT = Config.get('groupNameDefault')
 
 class UserManager:
     def __init__(self, client):
@@ -35,7 +34,7 @@ class UserManager:
                 'response': None
             }
 
-    def create_user(self, username, password, attributes: list[dict], group_name=GROUP_NAME_DEFAULT):
+    def create_user(self, username, password, attributes: list[dict], group_name):
         try:
             check_document = validate_document(username)
             if check_document.get('status'):

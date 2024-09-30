@@ -4,6 +4,7 @@ from loguru import logger
 from flask_restx import Namespace, Resource, fields
 
 from config import Config
+from services.bearer_token_validation import auth
 from services.user_group_manager import UserGroupManager
 
 user_groups_ns = Namespace(name='user-groups', description='Gerenciamento de usuarios dentro dos grupos')
@@ -25,6 +26,7 @@ response_model = user_groups_ns.model('Response', {
 
 @user_groups_ns.route('/add_user_to_group')
 class AddUserToGroupResource(Resource):
+    @auth.login_required
     @user_groups_ns.expect(add_user_to_group_model)
     @user_groups_ns.marshal_with(response_model)
     def post(self):
@@ -37,6 +39,7 @@ class AddUserToGroupResource(Resource):
 
 @user_groups_ns.route('/remove_user_from_group')
 class RemoveUserFromGroupResource(Resource):
+    @auth.login_required
     @user_groups_ns.expect(add_user_to_group_model)
     @user_groups_ns.marshal_with(response_model)
     def post(self):

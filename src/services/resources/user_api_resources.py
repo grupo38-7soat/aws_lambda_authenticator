@@ -9,6 +9,7 @@ from services.bearer_token_validation import auth
 from services.user_manager import UserManager
 
 PASSWORD_DEFAULT = Config.get('passwordDefault')
+GROUP_NAME_DEFAULT = Config.get('groupNameDefault')
 
 users_ns = Namespace(name='users', description='Gerenciamento de Usuários')
 
@@ -16,8 +17,18 @@ client = boto3.client(Config.get('awsClientCognito'), region_name=Config.get('aw
 
 user_manager = UserManager(client)
 
-create_and_update_user_model = users_ns.model('User', {
+update_user_model = users_ns.model('User', {
     'username': fields.String(required=True, description='Username'),
+    'attributes': fields.List(fields.Nested(users_ns.model('Attribute', {
+        'Name': fields.String(required=True, description='Attribute name'),
+        'Value': fields.String(required=True, description='Attribute value')
+    })), required=True, description='List of attributes')
+})
+
+create_user_model = users_ns.model('User', {
+    'username': fields.String(required=True, description='Username'),
+    'password': fields.String(required=False, description='Username'),
+    'group_name': fields.String(required=False, description='Username'),
     'attributes': fields.List(fields.Nested(users_ns.model('Attribute', {
         'Name': fields.String(required=True, description='Attribute name'),
         'Value': fields.String(required=True, description='Attribute value')
@@ -30,21 +41,19 @@ response_model = users_ns.model('Response', {
     'message': fields.String
 })
 
-tokens = {
-    "secret-token-1": "john",
-    "secret-token-2": "susan"
-}
-
 @users_ns.route('/create_user')
 class CreateUserResource(Resource):
     @auth.login_required
-    @users_ns.expect(create_and_update_user_model)
+    @users_ns.expect(create_user_model)
     @users_ns.marshal_with(response_model)
-    def post(self, password=PASSWORD_DEFAULT):
+    def post(self, password=PASSWORD_DEFAULT, group_name=GROUP_NAME_DEFAULT):
         logger.info(f'endpoint get_user was called with data {users_ns.payload} - by {auth.current_user()}')
-
         data = users_ns.payload
-        response = user_manager.create_user(data['username'], password, data['attributes'])
+        if data.get('password'):
+            password = data.get('password')
+        if data.get('group_name'):
+            group_name = data.get('group_name')
+        response = user_manager.create_user(data['username'], password, data['attributes'], group_name)
         return response
 
 @users_ns.route('/get_user')
@@ -60,7 +69,8 @@ class GetUserResource(Resource):
 
 @users_ns.route('/update_user')
 class UpdateUserResource(Resource):
-    @users_ns.expect(create_and_update_user_model)
+    @auth.login_required
+    @users_ns.expect(update_user_model)
     @users_ns.marshal_with(response_model)
     def put(self):
         logger.info(f'endpoint update_user was called with data {users_ns.payload}')
@@ -71,6 +81,7 @@ class UpdateUserResource(Resource):
 
 @users_ns.route('/delete_user')
 class DeleteUserResource(Resource):
+    @auth.login_required
     @users_ns.marshal_with(response_model)
     @users_ns.param('username', 'The username of the user', _in='query')
     def delete(self):
