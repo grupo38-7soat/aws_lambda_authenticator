@@ -13,6 +13,6 @@ GROUP_NAME = Config.get_list('groupsWithAccessPermissions')
 @auth.verify_token
 def verify_token(token):
     if token:
-        response = cognito_auth.validate_token_permition(token, GROUP_NAME)
-        if response['status_sucess']:
+        response = cognito_auth.validate_token_permission(token, GROUP_NAME)
+        if response['status_success']:
             return response['message']

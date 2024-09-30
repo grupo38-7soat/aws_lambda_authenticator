@@ -18,7 +18,7 @@ add_user_to_group_model = user_groups_ns.model('AddUserToGroup', {
 })
 
 response_model = user_groups_ns.model('Response', {
-    'status_sucess': fields.Boolean,
+    'status_success': fields.Boolean,
     'response': fields.Raw,
     'message': fields.String
 })

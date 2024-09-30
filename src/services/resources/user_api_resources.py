@@ -36,7 +36,7 @@ create_user_model = users_ns.model('User', {
 })
 
 response_model = users_ns.model('Response', {
-    'status_sucess': fields.Boolean,
+    'status_success': fields.Boolean,
     'response': fields.Raw,
     'message': fields.String
 })
