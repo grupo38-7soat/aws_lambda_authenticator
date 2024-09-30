@@ -32,5 +32,4 @@ class ValidateTokenResource(Resource):
     def post(self):
         data = request.form
         token = data.get('token')
-        is_valid = cognito.validate_token(token)
-        return {'is_valid': is_valid}
+        return cognito.validate_token(token)

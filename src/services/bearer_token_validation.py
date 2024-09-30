@@ -9,9 +9,10 @@ cognito_auth = CognitoAuth()
 
 GROUP_NAME = Config.get_list('groupsWithAccessPermissions')
 
+
 @auth.verify_token
 def verify_token(token):
     if token:
         response = cognito_auth.validate_token_permition(token, GROUP_NAME)
-        if response['success']:
-            return response['username']
+        if response['status_sucess']:
+            return response['message']

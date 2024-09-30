@@ -1,7 +1,9 @@
+import json
 import boto3
 from botocore.exceptions import ClientError
 
 from config import Config
+from utils.datetime_converter import datetime_converter
 
 PASSWORD_DEFAULT = Config.get('passwordDefault')
 
@@ -9,11 +11,34 @@ AUTHFLOW = 'USER_PASSWORD_AUTH'
 
 client = boto3.client(Config.get('awsClientCognito'), region_name=Config.get('awsRegion'))
 
+
 class CognitoAuth:
     def __init__(self):
         self.client = client
         self.client_id = Config.get('clientId')
         self.user_pool_id = Config.get('userPoolId')
+
+    @staticmethod
+    def response_helper(response, message_sucess: str, message_error: str):
+        if response:
+            if response.get('ResponseMetadata').get('HTTPStatusCode') == 200:
+                return {
+                    'status_sucess': True,
+                    'message': message_sucess,
+                    'response': json.loads(json.dumps(response, default=datetime_converter))
+                }
+            else:
+                return {
+                    'status_sucess': False,
+                    'message': message_error,
+                    'response': json.loads(json.dumps(response, default=datetime_converter))
+                }
+        else:
+            return {
+                'status_sucess': False,
+                'message': message_error,
+                'response': None
+            }
 
     def authenticate_user(self, username: str, password: str):
         try:
@@ -25,36 +50,34 @@ class CognitoAuth:
                 },
                 ClientId=self.client_id
             )
-            return response
+            return self.response_helper(response, 'User authenticated successfully', 'Authentication failed')
         except self.client.exceptions.NotAuthorizedException:
-            return 'Invalid username or password'
+            return self.response_helper(None, '', 'Invalid username or password')
         except Exception as e:
-            return str(e)
+            return self.response_helper(None, '', str(e))
 
-    def validate_token(self, token: str) -> bool:
+    def validate_token(self, token: str) -> dict:
+        if not token.startswith('Bearer '):
+            return self.response_helper(None, '', 'Token must start with "Bearer "')
+
+        token = token[len('Bearer '):]
+
         try:
             response = self.client.get_user(
                 AccessToken=token
             )
-            return response
+            return self.response_helper(response, 'Token is valid', 'Token validation failed')
         except ClientError as e:
-            print(f'Error: {e}')
-            return False
+            return self.response_helper(None, '', f'Error: {e}')
         except Exception as e:
-            return False
+            return self.response_helper(None, '', str(e))
 
     def validate_token_permition(self, token: str, group_names: list) -> dict:
-        response_template = {
-                'username': '',
-                'success': False
-            }
         try:
             response = self.client.get_user(
                 AccessToken=token
             )
             username = response['Username']
-
-            response_template['username'] = username
 
             groups_response = self.client.admin_list_groups_for_user(
                 Username=username,
@@ -64,11 +87,11 @@ class CognitoAuth:
 
             for group_name in group_names:
                 if group_name in groups:
-                    response_template['success'] = True
-                    return response_template
-            return response_template
+                    return self.response_helper(response, f'User {username} has required permissions',
+                                                'Permission validation failed')
+            return self.response_helper(response, '', f'User {username} does not have required permissions')
+
         except ClientError as e:
-            print(f'Error: {e}')
-            return response_template
+            return self.response_helper('', '', f'Error: {e}')
         except Exception as e:
-            return response_template
+            return self.response_helper('', '', str(e))
