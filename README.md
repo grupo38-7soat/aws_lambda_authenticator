@@ -29,6 +29,14 @@ Além disso, é necessário adicionar as variáveis de ambiente que se encontram
     groupsWithAccessPermissions=['admin','programmatic_user']
 ```
 
+Com o objetivo de facilitar o testes, o usuario e senha do acesso admin para autenticação é:
+```json
+{
+  "username": "028.567.405-61",
+  "password": "3sk^q3xbBAg2@BtJEHWG#%"
+}
+```
+
 ## Deploy na AWS
 
 Para realizar o deploy na AWS, utilizamos o AWS SAM CLI (Serverless Application Model). O AWS SAM CLI facilita o build e o deploy de aplicações serverless.
@@ -39,6 +47,10 @@ sam build
 
 Deploy: Este comando empacota e faz o deploy da aplicação na AWS.
 ```bash
-sam deploy --guided
+sam deploy
 ```
 O comando sam deploy --guided irá guiá-lo através do processo de configuração do deploy, incluindo a criação de um bucket S3 para armazenar o código-fonte e a configuração das permissões necessárias.
+
+
+---
+Obs: Todos os cpfs utilizados foram gerados através da plataforma de teste: https://www.geradordecpf.org/

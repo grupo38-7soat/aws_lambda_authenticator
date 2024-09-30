@@ -62,6 +62,8 @@ class UserManager:
                 return self.response_helper(None, '', 'O CPF enviado é inválido')
         except self.client.exceptions.UsernameExistsException:
             return self.response_helper(None, '', 'Usuário já existe')
+        except self.client.exceptions.InvalidPasswordException:
+            return self.response_helper(None, '', 'Password must have uppercase characters')
         except Exception as e:
             print(e)
 
@@ -87,6 +89,8 @@ class UserManager:
             return self.response_helper(response, 'Usuário atualizado com sucesso', 'Erro ao atualizar usuário')
         except self.client.exceptions.UserNotFoundException:
             return self.response_helper(None, '', 'Usuário não encontrado')
+        except self.client.exceptions.InvalidParameterException:
+            return self.response_helper(None, '', 'Parâmetros inválidos')
         except Exception as e:
             print(e)
             return self.response_helper(None, '', 'Erro ao atualizar usuário')
