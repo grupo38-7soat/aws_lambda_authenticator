@@ -1,11 +1,13 @@
 import json
+
+from config import Config
 from utils.datetime_converter import datetime_converter
-from botocore.exceptions import ClientError
 
 class GroupManager:
-    def __init__(self, client, user_pool_id):
+    def __init__(self, client):
         self.client = client
-        self.user_pool_id = user_pool_id
+        self.user_pool_id = Config.get('userPoolId')
+
 
     @staticmethod
     def response_helper(response, message_sucess: str, message_error: str):

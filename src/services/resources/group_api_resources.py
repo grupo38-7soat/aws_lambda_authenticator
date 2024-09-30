@@ -9,7 +9,7 @@ from services.group_manager import GroupManager
 groups_ns = Namespace(name='groups', description='Gerenciamento de Grupos')
 
 client = boto3.client(Config.get('awsClientCognito'), region_name=Config.get('awsRegion'))
-group_manager = GroupManager(client, Config.get('userPoolId'))
+group_manager = GroupManager(client)
 
 create_group_model = groups_ns.model('Group', {
     'group_name': fields.String(required=True, description='Group name'),

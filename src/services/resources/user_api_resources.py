@@ -14,7 +14,7 @@ users_ns = Namespace(name='users', description='Gerenciamento de Usuários')
 
 client = boto3.client(Config.get('awsClientCognito'), region_name=Config.get('awsRegion'))
 
-user_manager = UserManager(client, Config.get('userPoolId'))
+user_manager = UserManager(client)
 
 create_and_update_user_model = users_ns.model('User', {
     'username': fields.String(required=True, description='Username'),

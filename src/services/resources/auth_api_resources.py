@@ -1,12 +1,11 @@
 from flask_restx import Namespace, Resource
 
-from config import Config
 from flask import request
 from src.services.user_auth import CognitoAuth
 
 auth_ns = Namespace('auth', description='Authentication operations')
 
-cognito = CognitoAuth(client_id=Config.get('clientId'), user_pool_id=Config.get('awsUserPoolId'))
+cognito = CognitoAuth()
 
 @auth_ns.route('/login')
 class LoginResource(Resource):

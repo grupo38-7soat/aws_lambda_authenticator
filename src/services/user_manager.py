@@ -1,15 +1,17 @@
 import json
 
+from config import Config
+from services.user_group_manager import UserGroupManager
 from utils.check_document import validate_document
 from utils.datetime_converter import datetime_converter
 
 MESSAGE_ACTION = 'SUPPRESS'
-
+GROUP_NAME_DEFAULT = Config.get('groupNameDefault')
 
 class UserManager:
-    def __init__(self, client, user_pool_id):
+    def __init__(self, client):
         self.client = client
-        self.user_pool_id = user_pool_id
+        self.user_pool_id = Config.get('userPoolId')
 
     @staticmethod
     def response_helper(response, message_sucess: str, message_error: str):
@@ -33,7 +35,7 @@ class UserManager:
                 'response': None
             }
 
-    def create_user(self, username, password, attributes: list[dict]):
+    def create_user(self, username, password, attributes: list[dict], group_name=GROUP_NAME_DEFAULT):
         try:
             check_document = validate_document(username)
             if check_document.get('status'):
@@ -53,11 +55,9 @@ class UserManager:
                     Permanent=True
                 )
 
-                # self.client.admin_add_user_to_group(
-                #     UserPoolId=self.user_pool_id,
-                #     Username=username,
-                #     GroupName=group_name
-                # )
+                user_group_manager = UserGroupManager(self.client)
+                user_group_manager.add_user_to_group(username, group_name)
+
                 return self.response_helper(response, 'Usuário criado com sucesso', 'Erro ao criar usuário')
             else:
                 return self.response_helper(None, '', 'O CPF enviado é inválido')

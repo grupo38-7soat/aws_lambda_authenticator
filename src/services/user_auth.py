@@ -10,10 +10,10 @@ AUTHFLOW = 'USER_PASSWORD_AUTH'
 client = boto3.client(Config.get('awsClientCognito'), region_name=Config.get('awsRegion'))
 
 class CognitoAuth:
-    def __init__(self, client_id, user_pool_id):
+    def __init__(self):
         self.client = client
-        self.client_id = client_id
-        self.user_pool_id = user_pool_id
+        self.client_id = Config.get('clientId')
+        self.user_pool_id = Config.get('userPoolId')
 
     def authenticate_user(self, username: str, password: str = PASSWORD_DEFAULT):
         try:

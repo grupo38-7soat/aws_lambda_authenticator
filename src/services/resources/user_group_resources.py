@@ -9,7 +9,7 @@ from services.user_group_manager import UserGroupManager
 user_groups_ns = Namespace(name='user-groups', description='Gerenciamento de usuarios dentro dos grupos')
 
 client = boto3.client(Config.get('awsClientCognito'), region_name=Config.get('awsRegion'))
-user_group_manager = UserGroupManager(client, Config.get('userPoolId'))
+user_group_manager = UserGroupManager(client)
 
 add_user_to_group_model = user_groups_ns.model('AddUserToGroup', {
     'username': fields.String(required=True, description='Username'),

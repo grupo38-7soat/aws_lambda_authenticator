@@ -1,10 +1,9 @@
 from flask_httpauth import HTTPTokenAuth
 from services.user_auth import CognitoAuth
-from config import Config
 
 auth = HTTPTokenAuth(scheme='Bearer')
 
-cognito_auth = CognitoAuth(Config.get('clientId'), Config.get('userPoolId'))
+cognito_auth = CognitoAuth()
 
 GROUP_NAME = ['admin']
 
