@@ -13,23 +13,23 @@ class UserManager:
         self.user_pool_id = Config.get('userPoolId')
 
     @staticmethod
-    def response_helper(response, message_sucess: str, message_error: str):
+    def response_helper(response, message_success: str, message_error: str):
         if response:
             if response.get('ResponseMetadata').get('HTTPStatusCode') == 200:
                 return {
-                    'status_sucess': True,
-                    'message': message_sucess,
+                    'status_success': True,
+                    'message': message_success,
                     'response': json.loads(json.dumps(response, default=datetime_converter))
                 }
             else:
                 return {
-                    'status_sucess': False,
+                    'status_success': False,
                     'message': message_error,
                     'response': json.loads(json.dumps(response, default=datetime_converter))
                 }
         else:
             return {
-                'status_sucess': False,
+                'status_success': False,
                 'message': message_error,
                 'response': None
             }
@@ -57,11 +57,11 @@ class UserManager:
                 user_group_manager = UserGroupManager(self.client)
                 user_group_manager.add_user_to_group(username, group_name)
 
-                return self.response_helper(response, 'Usuário criado com sucesso', 'Erro ao criar usuário')
+                return self.response_helper(response, 'User created successfully', 'Error creating user')
             else:
-                return self.response_helper(None, '', 'O CPF enviado é inválido')
+                return self.response_helper(None, '', 'The provided CPF is invalid')
         except self.client.exceptions.UsernameExistsException:
-            return self.response_helper(None, '', 'Usuário já existe')
+            return self.response_helper(None, '', 'User already exists')
         except self.client.exceptions.InvalidPasswordException:
             return self.response_helper(None, '', 'Password must have uppercase characters')
         except Exception as e:
@@ -73,9 +73,9 @@ class UserManager:
                 UserPoolId=self.user_pool_id,
                 Username=username
             )
-            return self.response_helper(response, 'Usuário Encontrado com Sucesso!', 'Erro ao buscar usuário')
+            return self.response_helper(response, 'User found successfully', 'Error fetching user')
         except self.client.exceptions.UserNotFoundException:
-            return self.response_helper(None, '', 'Usuário não encontrado')
+            return self.response_helper(None, '', 'User not found')
         except Exception as e:
             print(e)
 
@@ -86,14 +86,14 @@ class UserManager:
                 Username=username,
                 UserAttributes=attributes
             )
-            return self.response_helper(response, 'Usuário atualizado com sucesso', 'Erro ao atualizar usuário')
+            return self.response_helper(response, 'User updated successfully', 'Error updating user')
         except self.client.exceptions.UserNotFoundException:
-            return self.response_helper(None, '', 'Usuário não encontrado')
+            return self.response_helper(None, '', 'User not found')
         except self.client.exceptions.InvalidParameterException:
-            return self.response_helper(None, '', 'Parâmetros inválidos')
+            return self.response_helper(None, '', 'Invalid parameters')
         except Exception as e:
             print(e)
-            return self.response_helper(None, '', 'Erro ao atualizar usuário')
+            return self.response_helper(None, '', 'Error updating user')
 
     def delete_user(self, username):
         try:
@@ -101,19 +101,19 @@ class UserManager:
                 UserPoolId=self.user_pool_id,
                 Username=username
             )
-            return self.response_helper(response, 'Usuário deletado com sucesso', 'Erro ao deletar usuário')
+            return self.response_helper(response, 'User deleted successfully', 'Error deleting user')
         except self.client.exceptions.UserNotFoundException:
-            return self.response_helper(None, '', 'Usuário não encontrado')
+            return self.response_helper(None, '', 'User not found')
         except Exception as e:
             print(e)
-            return self.response_helper(None, '', 'Erro ao deletar usuário')
+            return self.response_helper(None, '', 'Error deleting user')
 
     def list_all_users(self):
         try:
             response = self.client.list_users(
                 UserPoolId=self.user_pool_id
             )
-            return self.response_helper(response, 'Usuário encontrados!', 'Erro ao Carregar os usuários')
+            return self.response_helper(response, 'Users found successfully', 'Error loading users')
         except Exception as e:
             print(e)
-            return self.response_helper(None, '', 'Erro ao Carregar os usuários')
+            return self.response_helper(None, '', 'Error loading users')
