@@ -58,6 +58,7 @@ class CreateUserResource(Resource):
 
 @users_ns.route('/get_user')
 class GetUserResource(Resource):
+    @auth.login_required
     @users_ns.marshal_with(response_model)
     @users_ns.param('username', 'The username of the user', _in='query')
     def get(self):
@@ -93,6 +94,7 @@ class DeleteUserResource(Resource):
 
 @users_ns.route('/list_all_users')
 class ListAllUsersResource(Resource):
+    @auth.login_required
     @users_ns.marshal_with(response_model)
     def get(self):
         logger.info('endpoint list_all_users was called')

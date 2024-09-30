@@ -52,6 +52,7 @@ class RemoveUserFromGroupResource(Resource):
 
 @user_groups_ns.route('/list_users_in_group')
 class ListUsersInGroupResource(Resource):
+    @auth.login_required
     @user_groups_ns.marshal_with(response_model)
     @user_groups_ns.param('group_name', 'The name of the group', _in='query')
     def get(self):

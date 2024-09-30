@@ -39,6 +39,7 @@ class CreateGroupResource(Resource):
 
 @groups_ns.route('/get_group')
 class GetGroupResource(Resource):
+    @auth.login_required
     @groups_ns.marshal_with(response_model)
     @groups_ns.param('group_name', 'The name of the group', _in='query')
     def get(self):
@@ -77,6 +78,7 @@ class DeleteGroupResource(Resource):
 
 @groups_ns.route('/list_all_groups')
 class ListAllGroupsResource(Resource):
+    @auth.login_required
     @groups_ns.marshal_with(response_model)
     def get(self):
         logger.info('endpoint list_all_groups was called')
