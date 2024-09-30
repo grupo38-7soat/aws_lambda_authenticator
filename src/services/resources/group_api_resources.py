@@ -84,7 +84,7 @@ class DeleteGroupResource(Resource):
 
         response = group_manager.delete_group(group_name)
         if response['status_success']:
-            return response, HTTPStatus.NO_CONTENT
+            return response, HTTPStatus.OK
         else:
             return response, HTTPStatus.NOT_FOUND
 

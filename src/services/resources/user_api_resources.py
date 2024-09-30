@@ -102,7 +102,7 @@ class DeleteUserResource(Resource):
 
         response = user_manager.delete_user(username)
         if response['status_success']:
-            return response, HTTPStatus.NO_CONTENT
+            return response, HTTPStatus.OK
         else:
             return response, HTTPStatus.NOT_FOUND
 
