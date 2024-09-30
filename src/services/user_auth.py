@@ -15,9 +15,8 @@ class CognitoAuth:
         self.client_id = Config.get('clientId')
         self.user_pool_id = Config.get('userPoolId')
 
-    def authenticate_user(self, username: str, password: str = PASSWORD_DEFAULT):
+    def authenticate_user(self, username: str, password: str):
         try:
-            print(username, type(username))
             response = self.client.initiate_auth(
                 AuthFlow=AUTHFLOW,
                 AuthParameters={
