@@ -1,9 +1,7 @@
-import json
-
 from config import Config
-from services.user_group_manager import UserGroupManager
+from utils.response_helper import ResponseHelper
 from utils.check_document import validate_document
-from utils.datetime_converter import datetime_converter
+from services.user_group_manager import UserGroupManager
 
 MESSAGE_ACTION = 'SUPPRESS'
 
@@ -11,28 +9,7 @@ class UserManager:
     def __init__(self, client):
         self.client = client
         self.user_pool_id = Config.get('userPoolId')
-
-    @staticmethod
-    def response_helper(response, message_success: str, message_error: str):
-        if response:
-            if response.get('ResponseMetadata').get('HTTPStatusCode') == 200:
-                return {
-                    'status_success': True,
-                    'message': message_success,
-                    'response': json.loads(json.dumps(response, default=datetime_converter))
-                }
-            else:
-                return {
-                    'status_success': False,
-                    'message': message_error,
-                    'response': json.loads(json.dumps(response, default=datetime_converter))
-                }
-        else:
-            return {
-                'status_success': False,
-                'message': message_error,
-                'response': None
-            }
+        self.response_helper = ResponseHelper.response_helper
 
     def create_user(self, username, password, attributes: list[dict], group_name):
         try:

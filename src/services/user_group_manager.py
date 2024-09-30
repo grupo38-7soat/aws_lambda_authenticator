@@ -1,34 +1,11 @@
-import json
-
 from config import Config
-from utils.datetime_converter import datetime_converter
+from utils.response_helper import ResponseHelper
 
 class UserGroupManager:
     def __init__(self, client):
         self.client = client
         self.user_pool_id = Config.get('userPoolId')
-
-    @staticmethod
-    def response_helper(response, message_success: str, message_error: str):
-        if response:
-            if response.get('ResponseMetadata').get('HTTPStatusCode') == 200:
-                return {
-                    'status_success': True,
-                    'message': message_success,
-                    'response': json.loads(json.dumps(response, default=datetime_converter))
-                }
-            else:
-                return {
-                    'status_success': False,
-                    'message': message_error,
-                    'response': json.loads(json.dumps(response, default=datetime_converter))
-                }
-        else:
-            return {
-                'status_success': False,
-                'message': message_error,
-                'response': None
-            }
+        self.response_helper = ResponseHelper.response_helper
 
     def add_user_to_group(self, username, group_name):
         try:
