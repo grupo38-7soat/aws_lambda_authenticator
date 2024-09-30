@@ -19,23 +19,23 @@ class CognitoAuth:
         self.user_pool_id = Config.get('userPoolId')
 
     @staticmethod
-    def response_helper(response, message_sucess: str, message_error: str):
+    def response_helper(response, message_success: str, message_error: str):
         if response:
             if response.get('ResponseMetadata').get('HTTPStatusCode') == 200:
                 return {
-                    'status_sucess': True,
-                    'message': message_sucess,
+                    'status_success': True,
+                    'message': message_success,
                     'response': json.loads(json.dumps(response, default=datetime_converter))
                 }
             else:
                 return {
-                    'status_sucess': False,
+                    'status_success': False,
                     'message': message_error,
                     'response': json.loads(json.dumps(response, default=datetime_converter))
                 }
         else:
             return {
-                'status_sucess': False,
+                'status_success': False,
                 'message': message_error,
                 'response': None
             }
@@ -72,7 +72,7 @@ class CognitoAuth:
         except Exception as e:
             return self.response_helper(None, '', str(e))
 
-    def validate_token_permition(self, token: str, group_names: list) -> dict:
+    def validate_token_permission(self, token: str, group_names: list) -> dict:
         try:
             response = self.client.get_user(
                 AccessToken=token

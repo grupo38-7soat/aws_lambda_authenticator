@@ -8,26 +8,25 @@ class GroupManager:
         self.client = client
         self.user_pool_id = Config.get('userPoolId')
 
-
     @staticmethod
-    def response_helper(response, message_sucess: str, message_error: str):
+    def response_helper(response, message_success: str, message_error: str):
         if response:
             if response.get('ResponseMetadata').get('HTTPStatusCode') == 200:
                 return {
-                    'status_sucesso': True,
-                    'mensagem': message_sucess,
+                    'status_success': True,
+                    'message': message_success,
                     'response': json.loads(json.dumps(response, default=datetime_converter))
                 }
             else:
                 return {
-                    'status_sucesso': False,
-                    'mensagem': message_error,
+                    'status_success': False,
+                    'message': message_error,
                     'response': json.loads(json.dumps(response, default=datetime_converter))
                 }
         else:
             return {
-                'status_sucesso': False,
-                'mensagem': message_error,
+                'status_success': False,
+                'message': message_error,
                 'response': None
             }
 
@@ -38,7 +37,7 @@ class GroupManager:
                 GroupName=group_name,
                 Description=description
             )
-            return self.response_helper(response, 'Grupo criado com sucesso', 'Erro ao criar grupo')
+            return self.response_helper(response, 'Group created successfully', 'Error creating group')
         except Exception as e:
             return self.response_helper(None, '', str(e))
 
@@ -48,7 +47,7 @@ class GroupManager:
                 UserPoolId=self.user_pool_id,
                 GroupName=group_name
             )
-            return self.response_helper(response, 'Grupo recuperado com sucesso', 'Erro ao recuperar grupo')
+            return self.response_helper(response, 'Group retrieved successfully', 'Error retrieving group')
         except Exception as e:
             return self.response_helper(None, '', str(e))
 
@@ -59,7 +58,7 @@ class GroupManager:
                 GroupName=group_name,
                 Description=description
             )
-            return self.response_helper(response, 'Grupo atualizado com sucesso', 'Erro ao atualizar grupo')
+            return self.response_helper(response, 'Group updated successfully', 'Error updating group')
         except Exception as e:
             return self.response_helper(None, '', str(e))
 
@@ -69,7 +68,7 @@ class GroupManager:
                 UserPoolId=self.user_pool_id,
                 GroupName=group_name
             )
-            return self.response_helper(response, 'Grupo deletado com sucesso', 'Erro ao deletar grupo')
+            return self.response_helper(response, 'Group deleted successfully', 'Error deleting group')
         except Exception as e:
             return self.response_helper(None, '', str(e))
 
@@ -78,6 +77,6 @@ class GroupManager:
             response = self.client.list_groups(
                 UserPoolId=self.user_pool_id
             )
-            return self.response_helper(response, 'Grupos listados com sucesso', 'Erro ao listar grupos')
+            return self.response_helper(response, 'Groups listed successfully', 'Error listing groups')
         except Exception as e:
             return self.response_helper(None, '', str(e))
