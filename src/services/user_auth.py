@@ -1,8 +1,9 @@
 import boto3
-from aws_lambda_wsgi import response
 from botocore.exceptions import ClientError
 
 from config import Config
+
+PASSWORD_DEFAULT = Config.get('passwordDefault')
 
 AUTHFLOW = 'USER_PASSWORD_AUTH'
 
@@ -14,8 +15,9 @@ class CognitoAuth:
         self.client_id = client_id
         self.user_pool_id = user_pool_id
 
-    def authenticate_user(self, username: str, password: str = Config.get('passwordDefault')):
+    def authenticate_user(self, username: str, password: str = PASSWORD_DEFAULT):
         try:
+            print(username, type(username))
             response = self.client.initiate_auth(
                 AuthFlow=AUTHFLOW,
                 AuthParameters={
@@ -35,7 +37,7 @@ class CognitoAuth:
             response = self.client.get_user(
                 AccessToken=token
             )
-            return response.get('AuthenticationResult').get('AccessToken')
+            return response
         except ClientError as e:
             print(f'Error: {e}')
             return False
