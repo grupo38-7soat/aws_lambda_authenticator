@@ -52,6 +52,12 @@ class UserManager:
                     Password=password,
                     Permanent=True
                 )
+
+                # self.client.admin_add_user_to_group(
+                #     UserPoolId=self.user_pool_id,
+                #     Username=username,
+                #     GroupName=group_name
+                # )
                 return self.response_helper(response, 'Usuário criado com sucesso', 'Erro ao criar usuário')
             else:
                 return self.response_helper(None, '', 'O CPF enviado é inválido')

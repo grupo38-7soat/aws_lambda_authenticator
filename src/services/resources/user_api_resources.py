@@ -4,6 +4,8 @@ from loguru import logger
 from flask_restx import Namespace, Resource, fields
 
 from config import Config
+
+from services.bearer_token_validation import auth
 from services.user_manager import UserManager
 
 PASSWORD_DEFAULT = Config.get('passwordDefault')
@@ -11,6 +13,7 @@ PASSWORD_DEFAULT = Config.get('passwordDefault')
 users_ns = Namespace(name='users', description='Gerenciamento de Usuários')
 
 client = boto3.client(Config.get('awsClientCognito'), region_name=Config.get('awsRegion'))
+
 user_manager = UserManager(client, Config.get('userPoolId'))
 
 create_and_update_user_model = users_ns.model('User', {
@@ -27,12 +30,18 @@ response_model = users_ns.model('Response', {
     'message': fields.String
 })
 
+tokens = {
+    "secret-token-1": "john",
+    "secret-token-2": "susan"
+}
+
 @users_ns.route('/create_user')
 class CreateUserResource(Resource):
+    @auth.login_required
     @users_ns.expect(create_and_update_user_model)
     @users_ns.marshal_with(response_model)
     def post(self, password=PASSWORD_DEFAULT):
-        logger.info(f'endpoint get_user was called with data {users_ns.payload}')
+        logger.info(f'endpoint get_user was called with data {users_ns.payload} - by {auth.current_user()}')
 
         data = users_ns.payload
         response = user_manager.create_user(data['username'], password, data['attributes'])

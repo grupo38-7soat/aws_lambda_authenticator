@@ -1,17 +1,20 @@
+import boto3
+from aws_lambda_wsgi import response
 from botocore.exceptions import ClientError
 
 from config import Config
 
 AUTHFLOW = 'USER_PASSWORD_AUTH'
 
+client = boto3.client(Config.get('awsClientCognito'), region_name=Config.get('awsRegion'))
 
 class CognitoAuth:
-    def __init__(self, client, client_id, user_pool_id):
+    def __init__(self, client_id, user_pool_id):
         self.client = client
         self.client_id = client_id
         self.user_pool_id = user_pool_id
 
-    def authenticate_user(self, username: str, password: str = Config.get('passwordDefault')) :
+    def authenticate_user(self, username: str, password: str = Config.get('passwordDefault')):
         try:
             response = self.client.initiate_auth(
                 AuthFlow=AUTHFLOW,
@@ -21,7 +24,7 @@ class CognitoAuth:
                 },
                 ClientId=self.client_id
             )
-            return response.get('AuthenticationResult').get('AccessToken', '')
+            return response
         except self.client.exceptions.NotAuthorizedException:
             return 'Invalid username or password'
         except Exception as e:
@@ -32,9 +35,39 @@ class CognitoAuth:
             response = self.client.get_user(
                 AccessToken=token
             )
-            return True
+            return response.get('AuthenticationResult').get('AccessToken')
         except ClientError as e:
             print(f'Error: {e}')
             return False
         except Exception as e:
             return False
+
+    def validate_token_permition(self, token: str, group_names: list) -> dict:
+        response_template = {
+                'username': '',
+                'success': False
+            }
+        try:
+            response = self.client.get_user(
+                AccessToken=token
+            )
+            username = response['Username']
+
+            response_template['username'] = username
+
+            groups_response = self.client.admin_list_groups_for_user(
+                Username=username,
+                UserPoolId=self.user_pool_id
+            )
+            groups = [group['GroupName'] for group in groups_response['Groups']]
+
+            for group_name in group_names:
+                if group_name in groups or True:
+                    response_template['success'] = True
+                    return response_template
+            return response_template
+        except ClientError as e:
+            print(f'Error: {e}')
+            return response_template
+        except Exception as e:
+            return response_template
