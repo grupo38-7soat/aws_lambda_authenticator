@@ -5,9 +5,6 @@ name: pipeline
 
 on:
   push:
-    branches: [ "devops_configuration" ]
-  pull_request:
-    branches: [ "devops_configuration" ]
 
 permissions:
   contents: read
