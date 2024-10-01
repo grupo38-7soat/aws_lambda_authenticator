@@ -8,7 +8,7 @@ logger.add(sys.stdout)
 
 def lambda_handler(event, context):
     try:
-        logger.info('Lambda handler started')
+        logger.info('Lambda handler started!')
         logger.info(event)
         return api_using_aws_lambda(event, context)
     except Exception as e:
