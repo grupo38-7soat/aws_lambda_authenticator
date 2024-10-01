@@ -8,20 +8,20 @@ Description: >
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
-    Timeout: 60
-    MemorySize: 256
+    Timeout: 120
+    MemorySize: 512
 Resources:
-  HelloWorldFunction:
+  AwsLambdaCognitoAuthFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      FunctionName: cognitoAuthService
+      FunctionName: lambdaCognitoAuthService
       CodeUri: src/
       Handler: main.lambda_handler
       Runtime: python3.9
       Architectures:
       - x86_64
       Events:
-        ApiEvent:
+        AwsApiGatewayCognitoAuthFunction:
           Type: Api
           Properties:
             Path: /{proxy+}

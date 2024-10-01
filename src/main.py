@@ -1,7 +1,7 @@
 import sys
 from loguru import logger
 from services.expose_api_aws import api_using_aws_lambda
-from services.expose_api_service import ApiService
+# from services.expose_api_service import ApiService
 
 logger.remove(0)
 logger.add(sys.stdout)
@@ -15,5 +15,5 @@ def lambda_handler(event, context):
         logger.error(f'Unhandled exception: {e}')
         raise e
 
-if __name__ == '__main__':
-    ApiService().run()
+# if __name__ == '__main__':
+#     ApiService().run()

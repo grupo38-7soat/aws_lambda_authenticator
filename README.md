@@ -49,7 +49,12 @@ Deploy: Este comando empacota e faz o deploy da aplicação na AWS.
 ```bash
 sam deploy
 ```
-O comando sam deploy --guided irá guiá-lo através do processo de configuração do deploy, incluindo a criação de um bucket S3 para armazenar o código-fonte e a configuração das permissões necessárias.
+O comando sam deploy irá guiá-lo através do processo de configuração do deploy, incluindo a criação de um bucket S3 para armazenar o código-fonte e a configuração das permissões necessárias.
+
+```bash
+sam local start-api
+```
+O comando local start-api irá auxiliar na execução do serviço localmente, para testes e validações.
 
 
 ---

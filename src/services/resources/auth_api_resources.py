@@ -3,7 +3,7 @@ from flask_restx import Namespace, Resource, fields
 from http import HTTPStatus
 
 from config import Config
-from src.services.user_auth import CognitoAuth
+from services.user_auth import CognitoAuth
 
 auth_ns = Namespace('auth', description='Authentication operations')
 
