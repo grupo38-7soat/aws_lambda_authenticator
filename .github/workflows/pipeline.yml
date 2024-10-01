@@ -28,7 +28,8 @@ jobs:
 
     - name: Build SAM application
       run: |
-        sam build
+        ls
+        sam build --no-cached --debug
 
     - name: Deploy SAM application
       run: |
