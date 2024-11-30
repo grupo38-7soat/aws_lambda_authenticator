@@ -56,6 +56,5 @@ sam local start-api
 ```
 O comando local start-api irá auxiliar na execução do serviço localmente, para testes e validações.
 
-
 ---
 Obs: Todos os cpfs utilizados foram gerados através da plataforma de teste: https://www.geradordecpf.org/
